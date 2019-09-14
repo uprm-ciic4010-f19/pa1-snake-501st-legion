@@ -140,8 +140,8 @@ public class Player {
 			break;
 		}
 		
-		for(int i=1; i<this.lenght; i++)
-			if(handler.getWorld().body.get(i).x == x && handler.getWorld().body.get(i).y == y && !handler.getWorld().appleLocation[x][y])
+		for(int i=1; i<this.lenght-1; i++)
+			if(handler.getWorld().body.get(i).x == xCoord && handler.getWorld().body.get(i).y == yCoord)
 				death();
 
 		this.steps++;
