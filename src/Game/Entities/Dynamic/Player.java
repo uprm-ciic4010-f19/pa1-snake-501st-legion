@@ -80,7 +80,7 @@ public class Player {
 		}if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_RIGHT) && direction != "Left"){
 			direction="Right";
 		}
-		
+
 		//adds a tail by pressing N
 		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)) {		
 			debugEat();
@@ -95,11 +95,16 @@ public class Player {
 		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_MINUS)){
 			this.decreaseSpeed();
 		}
-		
+
+		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_5)) {
+			handler.getWorld().appleLocation[3][0] = true;
+			handler.getWorld().appleLocation[0][3] = true;
+		}
+
 		//pauses game
 		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_ESCAPE)) {
-        	State.setState(handler.getGame().pauseState);
-        }
+			State.setState(handler.getGame().pauseState);
+		}
 
 
 	}
@@ -112,16 +117,15 @@ public class Player {
 		case "Left":
 			//this teleports player to other end
 			if(xCoord==0){
-				xCoord = (gridSize-1);
-			}
-			
-			if(handler.getWorld().playerLocation[x-1][y] && !handler.getWorld().appleLocation[x-1][y]) {
-				death();
+				xCoord = (gridSize);
 			}
 
 			//checks if the next tile is a tail, if so call death() - JFRM
 			else{
-				xCoord--;
+				if(handler.getWorld().playerLocation[xCoord-1][yCoord] && !handler.getWorld().appleLocation[xCoord-1][yCoord]) {
+					death();
+				}else
+					xCoord--;
 			}
 			break;
 
@@ -131,14 +135,13 @@ public class Player {
 			if(xCoord==gridSize){
 				xCoord = 0;
 			}
-			
-			if(handler.getWorld().playerLocation[x+1][y] && !handler.getWorld().appleLocation[x+1][y]) {
-				death();
-			}
 
 			//checks if the next tile is a tail, if so call death() - JFRM  
 			else{
-				xCoord++;
+				if(handler.getWorld().playerLocation[xCoord+1][yCoord] && !handler.getWorld().appleLocation[xCoord+1][yCoord]) {
+					death();
+				}else
+					xCoord++;
 			}
 			break;
 
@@ -149,13 +152,12 @@ public class Player {
 				yCoord = (gridSize);
 			}
 
-			if(handler.getWorld().playerLocation[x][y-1] && !handler.getWorld().appleLocation[x][y-1]) {
-				death();
-			}
-			
 			//checks if the next tile is a tail, if so call death() - JFRM
 			else{
-				yCoord--;
+				if(handler.getWorld().playerLocation[xCoord][yCoord-1] && !handler.getWorld().appleLocation[xCoord][yCoord-1]) {
+					death();
+				}else
+					yCoord--;
 			}
 			break;
 
@@ -165,28 +167,27 @@ public class Player {
 			if(yCoord==gridSize){
 				yCoord = 0;
 			}
-			
-			if(handler.getWorld().playerLocation[x][y+1] && !handler.getWorld().appleLocation[x][y+1]) {
-				death();
-			}
 
 			//checks if the next tile is a tail, if so call death() - JFRM
 			else{
-				yCoord++;
+				if(handler.getWorld().playerLocation[xCoord][yCoord+1] && !handler.getWorld().appleLocation[xCoord][yCoord+1]) {
+					death();
+				}else
+					yCoord++;
 			}
 			break;
 		}
 
-//		for(int i=1; i<this.lenght-1; i++)
-//			if(handler.getWorld().body.get(i).x == xCoord && handler.getWorld().body.get(i).y == yCoord)
-//				death();
+		//		for(int i=1; i<this.lenght-1; i++)
+		//			if(handler.getWorld().body.get(i).x == xCoord && handler.getWorld().body.get(i).y == yCoord)
+		//				death();
 
 		//increments the steps
 		this.steps++;
 		handler.getWorld().playerLocation[xCoord][yCoord]=true;
 
 		if(handler.getWorld().appleLocation[xCoord][yCoord]){
-			
+
 			//if apple is good, then eat as normal, else, check if the player body is empty, if so then trigger death, otherwise remove a tail
 			if(handler.getWorld().getApple().isGood()) {
 				Eat();
@@ -198,7 +199,7 @@ public class Player {
 				}
 			}
 		}
-		
+
 		if(!handler.getWorld().body.isEmpty()) {
 			handler.getWorld().playerLocation[handler.getWorld().body.getLast().x][handler.getWorld().body.getLast().y] = false;
 			handler.getWorld().body.removeLast();
@@ -218,7 +219,7 @@ public class Player {
 			for (int j = 0; j < handler.getWorld().GridWidthHeightPixelCount; j++) {
 				g.setColor(Color.WHITE);
 				g.drawString("Score: " + df.format(this.scoreResult), 10, 10);
-				g.drawString("Steps: " + this.steps, 10,20);
+				g.drawString("Steps: " + this.steps + "/420", 10,20);
 
 				if(playeLocation[i][j]||handler.getWorld().appleLocation[i][j]){
 					g.fillRect((i*handler.getWorld().GridPixelsize),
@@ -384,7 +385,7 @@ public class Player {
 		this.currScore++;
 		this.scoreResult = Math.sqrt((2*this.currScore) + 1);
 	}
-	
+
 	//reduces score
 	public void reduceScore() {
 		this.scoreResult -= Math.sqrt((2*this.currScore) + 1);
@@ -400,7 +401,7 @@ public class Player {
 		this.resetScore();
 		State.setState(handler.getGame().deathState);
 	}
-	
+
 	public void debugEat() {
 		handler.getWorld().body.addFirst(new Tail(xCoord, yCoord, handler));
 		this.calculateScore();
