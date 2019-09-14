@@ -18,6 +18,10 @@ public class Images {
     public static BufferedImage[] BTitle;
     public static BufferedImage[] Options;
     public static ImageIcon icon;
+    
+    //button for retry in deathState
+    public static BufferedImage[] Retry;
+    public static BufferedImage Death;
 
     public Images() {
 
@@ -25,6 +29,8 @@ public class Images {
         Resume = new BufferedImage[2];
         BTitle = new BufferedImage[2];
         Options = new BufferedImage[2];
+        
+        Retry = new BufferedImage[2];
 
         try {
 
@@ -39,8 +45,13 @@ public class Images {
             butstart[0]= ImageIO.read(getClass().getResourceAsStream("/Buttons/NormBut.png"));//normbut
             butstart[1]= ImageIO.read(getClass().getResourceAsStream("/Buttons/HoverBut.png"));//hoverbut
             butstart[2]= ImageIO.read(getClass().getResourceAsStream("/Buttons/ClickedBut.png"));//clickbut
-
+            
             icon =  new ImageIcon(ImageIO.read(getClass().getResourceAsStream("/Sheets/icon.png")));
+            
+            //loading images for retry button and death screen
+//            Retry[0] = ImageIO.read(getClass().getResourceAsStream("/Buttons/Retry_Temp.png"));
+//            Retry[1] = ImageIO.read(getClass().getResourceAsStream("/Buttons/RetryP_Temp.png"));
+            Death = ImageIO.read(getClass().getResourceAsStream("/Buttons/Death_Temp.png"));
 
 
         }catch (IOException e) {

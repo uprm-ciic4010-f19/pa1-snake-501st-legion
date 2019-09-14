@@ -7,6 +7,8 @@ import Worlds.WorldOne;
 
 import java.awt.*;
 
+import com.sun.glass.events.KeyEvent;
+
 
 /**
  * Created by AlexVR on 7/1/2018.
@@ -30,13 +32,16 @@ public class GameState extends State {
         }
         handler.getWorld().playerLocation[handler.getWorld().player.xCoord][handler.getWorld().player.yCoord] =true;
 
-
     }
 
     @Override
     public void tick() {
 
         handler.getWorld().tick();
+        
+        if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_ESCAPE)) {
+        	State.setState(handler.getGame().pauseState);
+        }
 
     }
 
