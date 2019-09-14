@@ -6,6 +6,10 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import javafx.collections.SetChangeListener;
+
+import java.awt.Color;
+
 /**
  * Created by AlexVR on 7/1/2018.
  */
@@ -28,7 +32,7 @@ public class DisplayScreen {
     }
 
     private void createDisplay(){
-        frame = new JFrame(title);
+    	frame = new JFrame(title);
         frame.setSize(width, height);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setResizable(false);
@@ -47,7 +51,7 @@ public class DisplayScreen {
         canvas.setMaximumSize(new Dimension(width, height));
         canvas.setMinimumSize(new Dimension(width, height));
         canvas.setFocusable(false);
-        canvas.setBackground(Color.black);
+        canvas.setBackground(new Color(255,0,255));  //changes background to magenta
 
         frame.add(canvas);
         frame.pack();

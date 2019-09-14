@@ -9,6 +9,7 @@ public class Apple {
 
     private Handler handler;
 
+    public boolean isGood;
     public int xCoord;
     public int yCoord;
 
@@ -16,7 +17,11 @@ public class Apple {
         this.handler=handler;
         this.xCoord=x;
         this.yCoord=y;
+        this.isGood=true;
     }
-
-
+    
+    public boolean isGood() {
+    	return this.isGood;
+    }
+    
 }

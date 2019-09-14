@@ -1,6 +1,7 @@
 package Main;
 
 import Display.DisplayScreen;
+import Game.GameStates.DeathState;
 import Game.GameStates.GameState;
 import Game.GameStates.MenuState;
 import Game.GameStates.PauseState;
@@ -8,8 +9,12 @@ import Game.GameStates.State;
 import Input.KeyManager;
 import Input.MouseManager;
 import Resources.Images;
+import sun.font.EAttribute;
 
 import javax.sound.sampled.*;
+
+import com.sun.glass.events.KeyEvent;
+
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -45,6 +50,9 @@ public class GameSetUp implements Runnable {
     public State gameState;
     public State menuState;
     public State pauseState;
+    
+    //death state
+    public State deathState;
 
     //Res.music
     private InputStream audioFile;
@@ -81,7 +89,9 @@ public class GameSetUp implements Runnable {
         gameState = new GameState(handler);
         menuState = new MenuState(handler);
         pauseState = new PauseState(handler);
+        deathState = new DeathState(handler);
 
+        //set this to gamestate, and you can skip menu!
         State.setState(menuState);
 
         try {
@@ -112,13 +122,19 @@ public class GameSetUp implements Runnable {
             return;
         running = true;
         //this runs the run method in this  class
+        
+        /* Threads allow you to run
+         * multiple pieces of code
+         * at the same time */
+        
         thread = new Thread(this);
         thread.start();
     }
 
     public void run(){
 
-        //initiallizes everything in order to run without breaking
+    	//initializes everything in order to run without breaking
+
         init();
 
         int fps = 60;
@@ -148,6 +164,7 @@ public class GameSetUp implements Runnable {
                 ticks = 0;
                 timer = 0;
             }
+            
         }
 
         stop();
@@ -178,8 +195,7 @@ public class GameSetUp implements Runnable {
         g.drawImage(loading ,0,0,width,height,null);
         if(State.getState() != null)
             State.getState().render(g);
-
-
+        
         //End Drawing!
         bs.show();
         g.dispose();
