@@ -9,6 +9,7 @@ import Game.GameStates.State;
 import Input.KeyManager;
 import Input.MouseManager;
 import Resources.Images;
+import sun.font.EAttribute;
 
 import javax.sound.sampled.*;
 
@@ -132,7 +133,8 @@ public class GameSetUp implements Runnable {
 
     public void run(){
 
-        //initializes everything in order to run without breaking
+    	//initializes everything in order to run without breaking
+
         init();
 
         int fps = 60;

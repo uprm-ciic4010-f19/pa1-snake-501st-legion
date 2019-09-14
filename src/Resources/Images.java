@@ -49,8 +49,8 @@ public class Images {
             icon =  new ImageIcon(ImageIO.read(getClass().getResourceAsStream("/Sheets/icon.png")));
             
             //loading images for retry button and death screen
-//            Retry[0] = ImageIO.read(getClass().getResourceAsStream("/Buttons/Retry_Temp.png"));
-//            Retry[1] = ImageIO.read(getClass().getResourceAsStream("/Buttons/RetryP_Temp.png"));
+            Retry[0] = ImageIO.read(getClass().getResourceAsStream("/Buttons/Retry.png"));
+            Retry[1] = ImageIO.read(getClass().getResourceAsStream("/Buttons/RetryP.png"));
             Death = ImageIO.read(getClass().getResourceAsStream("/Buttons/Death_Temp.png"));
 
 

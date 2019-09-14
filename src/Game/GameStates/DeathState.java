@@ -17,7 +17,7 @@ public class DeathState extends State{
 		uiManager = new UIManager(handler);
         handler.getMouseManager().setUimanager(uiManager);
 
-        uiManager.addObjects(new UIImageButton(56, 223, 128, 64, Images.BTitle, () -> {
+        uiManager.addObjects(new UIImageButton(56, 223, 128, 64, Images.Retry, () -> {
             handler.getMouseManager().setUimanager(null);
             State.setState(handler.getGame().menuState);
         }));
@@ -39,7 +39,7 @@ public class DeathState extends State{
 
 	@Override
 	public void render(Graphics g) {
-		g.drawImage(Images.Death,0,0,800,600,null);
+		g.drawImage(Images.Death,0,0,handler.getWidth(),handler.getHeight(),null);
         uiManager.Render(g);
 	}
 

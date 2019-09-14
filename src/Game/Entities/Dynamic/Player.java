@@ -1,6 +1,7 @@
 package Game.Entities.Dynamic;
 
 import Main.Handler;
+import sun.applet.Main;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -30,9 +31,11 @@ public class Player {
 	public int steps;
 	int gridSize;
 
-	public int moveCounter;
-
 	public String direction;//is your first name one?
+
+	public float moveCounter;
+
+	public float speed;
 
 	public Player(Handler handler){
 		this.handler = handler;
@@ -46,18 +49,24 @@ public class Player {
 		scoreResult = 0;
 		steps = 0;
 		gridSize = handler.getWorld().GridWidthHeightPixelCount-1;
+		speed = 5;
+
 
 	}
 
 	public void tick(){
+
+		int x = xCoord;
+		int y = yCoord;
 		moveCounter++;
-		if(moveCounter>=5) {
+		if(moveCounter>=this.speed) {
 			checkCollisionAndMove();
 			moveCounter=0;
 		}
 
-		if(this.steps > 100) {
-			handler.getWorld().getApple();
+		//counts steps for use in calculating rotten apples
+		if(this.steps > 420) {
+			handler.getWorld().getApple().isGood = false;
 		}
 
 		//you can add an extra condition in order to make sure it does not go into itself
@@ -70,28 +79,44 @@ public class Player {
 			direction="Left";
 		}if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_RIGHT) && direction != "Left"){
 			direction="Right";
-		}if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)) {
-			debugEat();
-		}if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_5)) {
-			handler.getWorld().appleLocation[3][0] = true;
-			handler.getWorld().appleLocation[8][19] = true;
-			handler.getWorld().appleLocation[0][3] = true;
-			handler.getWorld().appleLocation[19][8] = true;
 		}
+		
+		//adds a tail by pressing N
+		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)) {		
+			debugEat();
+		}
+
+		//makes snake move faster
+		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_EQUALS)){
+			this.increaseSpeed();
+		}
+
+		//makes snake move slower
+		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_MINUS)){
+			this.decreaseSpeed();
+		}
+		
+		//pauses game
+		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_ESCAPE)) {
+        	State.setState(handler.getGame().pauseState);
+        }
+
 
 	}
 
-	//implemented teleport to opposite end and 'death' event upon collision with own tail - JFRM
 	public void checkCollisionAndMove(){
 		handler.getWorld().playerLocation[xCoord][yCoord]=false;
 		int x = xCoord;
 		int y = yCoord;
 		switch (direction){
 		case "Left":
-
 			//this teleports player to other end
 			if(xCoord==0){
 				xCoord = (gridSize-1);
+			}
+			
+			if(handler.getWorld().playerLocation[x-1][y] && !handler.getWorld().appleLocation[x-1][y]) {
+				death();
 			}
 
 			//checks if the next tile is a tail, if so call death() - JFRM
@@ -105,6 +130,10 @@ public class Player {
 			//this teleports player to other end - JFRM
 			if(xCoord==gridSize){
 				xCoord = 0;
+			}
+			
+			if(handler.getWorld().playerLocation[x+1][y] && !handler.getWorld().appleLocation[x+1][y]) {
+				death();
 			}
 
 			//checks if the next tile is a tail, if so call death() - JFRM  
@@ -120,6 +149,10 @@ public class Player {
 				yCoord = (gridSize);
 			}
 
+			if(handler.getWorld().playerLocation[x][y-1] && !handler.getWorld().appleLocation[x][y-1]) {
+				death();
+			}
+			
 			//checks if the next tile is a tail, if so call death() - JFRM
 			else{
 				yCoord--;
@@ -132,6 +165,10 @@ public class Player {
 			if(yCoord==gridSize){
 				yCoord = 0;
 			}
+			
+			if(handler.getWorld().playerLocation[x][y+1] && !handler.getWorld().appleLocation[x][y+1]) {
+				death();
+			}
 
 			//checks if the next tile is a tail, if so call death() - JFRM
 			else{
@@ -139,15 +176,18 @@ public class Player {
 			}
 			break;
 		}
-		
-		for(int i=1; i<this.lenght-1; i++)
-			if(handler.getWorld().body.get(i).x == xCoord && handler.getWorld().body.get(i).y == yCoord)
-				death();
 
+//		for(int i=1; i<this.lenght-1; i++)
+//			if(handler.getWorld().body.get(i).x == xCoord && handler.getWorld().body.get(i).y == yCoord)
+//				death();
+
+		//increments the steps
 		this.steps++;
 		handler.getWorld().playerLocation[xCoord][yCoord]=true;
 
 		if(handler.getWorld().appleLocation[xCoord][yCoord]){
+			
+			//if apple is good, then eat as normal, else, check if the player body is empty, if so then trigger death, otherwise remove a tail
 			if(handler.getWorld().getApple().isGood()) {
 				Eat();
 			}else{
@@ -157,9 +197,8 @@ public class Player {
 					EatRotten();
 				}
 			}
-			this.steps = 0;
 		}
-
+		
 		if(!handler.getWorld().body.isEmpty()) {
 			handler.getWorld().playerLocation[handler.getWorld().body.getLast().x][handler.getWorld().body.getLast().y] = false;
 			handler.getWorld().body.removeLast();
@@ -178,8 +217,8 @@ public class Player {
 		for (int i = 0; i < handler.getWorld().GridWidthHeightPixelCount; i++) {
 			for (int j = 0; j < handler.getWorld().GridWidthHeightPixelCount; j++) {
 				g.setColor(Color.WHITE);
-//				g.drawString("Score: " + df.format(this.scoreResult), 10, 10);
-//				g.drawString("Steps: " + this.steps, 10,20);
+				g.drawString("Score: " + df.format(this.scoreResult), 10, 10);
+				g.drawString("Steps: " + this.steps, 10,20);
 
 				if(playeLocation[i][j]||handler.getWorld().appleLocation[i][j]){
 					g.fillRect((i*handler.getWorld().GridPixelsize),
@@ -188,32 +227,30 @@ public class Player {
 							handler.getWorld().GridPixelsize);
 				}
 
-//				//changes good apple color
-//				if(handler.getWorld().appleLocation[i][j]){
-//					g.setColor(handler.getWorld().getApple().isGood() ? Color.RED : Color.CYAN);
-//					g.fillRect((i*handler.getWorld().GridPixelsize),
-//							(j*handler.getWorld().GridPixelsize),
-//							handler.getWorld().GridPixelsize,
-//							handler.getWorld().GridPixelsize);
-//				}
-//
-//				//changes snake color
-//				if(playeLocation[i][j]){
-//					g.setColor(randomColor = new Color(red, green, blue));
-//					g.fillRect((i*handler.getWorld().GridPixelsize),
-//							(j*handler.getWorld().GridPixelsize),
-//							handler.getWorld().GridPixelsize,
-//							handler.getWorld().GridPixelsize);
-//				}
+				//changes good apple color
+				if(handler.getWorld().appleLocation[i][j]){
+					g.setColor(handler.getWorld().getApple().isGood() ? Color.WHITE : Color.BLACK);
+					g.fillRect((i*handler.getWorld().GridPixelsize),
+							(j*handler.getWorld().GridPixelsize),
+							handler.getWorld().GridPixelsize,
+							handler.getWorld().GridPixelsize);
+				}
+
+				//changes snake color
+				if(playeLocation[i][j]){
+					g.setColor(randomColor = new Color(red, green, blue));
+					g.fillRect((i*handler.getWorld().GridPixelsize),
+							(j*handler.getWorld().GridPixelsize),
+							handler.getWorld().GridPixelsize,
+							handler.getWorld().GridPixelsize);
+				}
 			}
 		}
 	}
 
+
 	public void Eat(){
-
-		//increment currScore
 		this.calculateScore();
-
 		lenght++;
 		Tail tail= null;
 		handler.getWorld().appleLocation[xCoord][yCoord]=false;
@@ -228,6 +265,7 @@ public class Player {
 						tail=new Tail(this.xCoord,this.yCoord-1,handler);
 					}else{
 						tail=new Tail(this.xCoord,this.yCoord+1,handler);
+
 					}
 				}
 			}else{
@@ -241,6 +279,7 @@ public class Player {
 					}
 				}
 			}
+
 			break;
 		case "Right":
 			if( handler.getWorld().body.isEmpty()){
@@ -315,6 +354,8 @@ public class Player {
 			}
 			break;
 		}
+
+		this.increaseSpeed();
 		handler.getWorld().body.addLast(tail);
 		handler.getWorld().playerLocation[tail.x][tail.y] = true;
 	}
@@ -338,18 +379,15 @@ public class Player {
 		this.justAte = justAte;
 	}
 
-	//debugEat allows the player to grow a tail upon pressing 'N' works same as Eat(), but w/o updating apple location - JFRM
-	public void debugEat() {
-		//    	this.Eat();
-		//    	handler.getWorld().appleOnBoard = true;
-		handler.getWorld().body.addFirst(new Tail(xCoord, yCoord, handler));
-		this.calculateScore();
-	}
-
 	//calculates the score of the snake
 	public void calculateScore() {
 		this.currScore++;
 		this.scoreResult = Math.sqrt((2*this.currScore) + 1);
+	}
+	
+	//reduces score
+	public void reduceScore() {
+		this.scoreResult -= Math.sqrt((2*this.currScore) + 1);
 	}
 
 	//resets score to 0
@@ -362,10 +400,15 @@ public class Player {
 		this.resetScore();
 		State.setState(handler.getGame().deathState);
 	}
+	
+	public void debugEat() {
+		handler.getWorld().body.addFirst(new Tail(xCoord, yCoord, handler));
+		this.calculateScore();
+	}
 
 	//call this if player eats a rotten apple
 	public void EatRotten() {
-		this.scoreResult -= this.scoreResult;
+		this.reduceScore();
 		lenght--;
 		handler.getWorld().appleLocation[xCoord][yCoord]=false;
 		handler.getWorld().appleOnBoard=false;
@@ -373,4 +416,18 @@ public class Player {
 		handler.getWorld().body.removeLast();
 		handler.getWorld().getApple().isGood = true;
 	}
+
+	//increase snake speed
+	public void increaseSpeed() {
+		if(this.speed > 0)
+			this.speed -= 1;
+		else
+			this.speed = this.speed/2;
+	}
+
+	//decrease snake speed
+	public void decreaseSpeed() {
+		this.speed += 1;
+	}
+
 }
